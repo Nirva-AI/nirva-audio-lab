@@ -57,4 +57,27 @@ temp/
 .env.local
 .env.development.local
 .env.test.local
-.env.production.local 
+.env.production.local
+
+# Vendor library models (large files)
+vendor/**/*.pt
+vendor/**/*.pth
+vendor/**/*.onnx
+vendor/**/*.mlmodel
+vendor/**/*.bin
+
+# Except our specific CoreML model
+!vendor/3D-Speaker/campplus_cn_en_common.mlpackage
+
+# Swift/Xcode build artifacts
+vendor/**/.build/
+vendor/**/xcuserdata/
+vendor/**/*.xcworkspace/xcuserdata/
+vendor/**/DerivedData/
+vendor/**/*.hmap
+vendor/**/*.ipa
+vendor/**/*.dSYM.zip
+vendor/**/*.dSYM
+
+# Jupyter notebooks
+vendor/**/.ipynb_checkpoints/

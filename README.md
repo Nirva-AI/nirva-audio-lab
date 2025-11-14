@@ -1,8 +1,40 @@
 # 🎙️ Nirva Audio Lab
 
-Nirva Audio Lab is a powerful audio processing application that provides comprehensive audio analysis and transcription capabilities. Built with Python and Streamlit, it offers an intuitive interface for processing audio files with advanced features.
+**Consolidated repository for audio ML research, experiments, and Streamlit processing app.**
 
-## ✨ Features
+This repo combines:
+- **Streamlit App**: Python-based audio analysis and transcription UI (`app.py`)
+- **Vendor Libraries**: All audio ML libraries for on-device processing (`vendor/`)
+- **Experiments**: Research experiments and prototypes (`experiments/`)
+- **Documentation**: Architecture and integration guides (`docs/`)
+
+---
+
+## 📁 Repository Structure
+
+```
+nirva-audio-lab/
+├── app.py                  # Streamlit audio processing app
+├── audio_utils.py          # Audio processing utilities
+├── transcription.py        # Transcription logic
+├── requirements.txt        # Python dependencies
+│
+├── vendor/                 # Vendored ML libraries (with git history)
+│   ├── FluidAudio/         # Complete audio pipeline (ASR, VAD, Diarization)
+│   ├── WhisperKit/         # On-device Whisper ASR for iOS
+│   ├── whisperkittools/    # Model conversion and optimization
+│   ├── 3D-Speaker/         # CAM++ speaker verification (⚠️ local changes)
+│   └── pyannote-audio/     # Speaker diarization research
+│
+├── experiments/            # Research experiments
+├── docs/                   # Documentation
+│   └── NIRVA_AUDIO_ARCHITECTURE.md
+└── QUICK_START.md         # Quick reference guide
+```
+
+---
+
+## ✨ Streamlit App Features
 
 - **✂️ Silence Detection and Trimming**
   - Automatically detect and remove silence segments
@@ -127,4 +159,79 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - OpenAI Whisper for speech recognition
 - Pyannote.audio for speaker diarization
-- Streamlit for the web interface 
+- Streamlit for the web interface
+
+---
+
+## 📦 Vendor Libraries
+
+| Library | Purpose | Status | Source |
+|---------|---------|--------|--------|
+| **FluidAudio** | ASR + Diarization pipeline | ✅ Unmodified | [argmaxinc/FluidAudio](https://github.com/argmaxinc/FluidAudio) |
+| **WhisperKit** | On-device Whisper ASR | ✅ Unmodified | [argmaxinc/WhisperKit](https://github.com/argmaxinc/WhisperKit) |
+| **whisperkittools** | Model optimization | ✅ Unmodified | [argmaxinc/whisperkittools](https://github.com/argmaxinc/whisperkittools) |
+| **3D-Speaker** | CAM++ voiceprint verification | ⚠️ **Local changes** | [alibaba-damo/3D-Speaker](https://github.com/alibaba-damo-academy/3D-Speaker) |
+| **pyannote-audio** | Diarization research | ⚠️ **Local changes** | [pyannote/pyannote-audio](https://github.com/pyannote/pyannote-audio) |
+
+### 3D-Speaker Modifications
+
+**Added files:**
+- `scripts/convert_campplus_to_coreml.py` - PyTorch → CoreML conversion
+- `scripts/test_speaker_verification.py` - Verification testing script
+- `campplus_cn_en_common.mlpackage/` - CoreML model (14MB, 192-dim embeddings)
+- `SPEAKER_VERIFICATION_COMPLETE.md` - Integration guide
+
+### Working with Vendor Libraries
+
+Each vendor library maintains its own git history. You can:
+
+```bash
+# Make local changes
+cd vendor/3D-Speaker
+git commit -am "Add new feature"
+
+# Pull upstream updates
+cd vendor/FluidAudio
+git fetch origin
+git merge origin/main
+
+# See what you've changed
+cd vendor/3D-Speaker
+git log origin/main..HEAD  # Show local commits
+git diff origin/main        # Show all changes
+```
+
+---
+
+## 📚 Documentation
+
+- **[QUICK_START.md](QUICK_START.md)** - Quick command reference
+- **[docs/NIRVA_AUDIO_ARCHITECTURE.md](docs/NIRVA_AUDIO_ARCHITECTURE.md)** - Complete on-device processing pipeline
+- **[vendor/3D-Speaker/SPEAKER_VERIFICATION_COMPLETE.md](vendor/3D-Speaker/SPEAKER_VERIFICATION_COMPLETE.md)** - CAM++ integration guide
+- **[vendor/FluidAudio/CLAUDE.md](vendor/FluidAudio/CLAUDE.md)** - FluidAudio development guide
+
+---
+
+## 🎯 On-Device Audio Pipeline (nirva_app integration)
+
+The vendor libraries support Nirva's 4-task on-device processing:
+
+1. **Offline ASR** - Necklace stores audio as files
+2. **Periodic Processing** - On-device ASR to diarized transcript
+3. **Voiceprint Verification** - Compare diarized speakers with user voiceprint, tag as "self"
+4. **Dev Screen** - Toggle cloud vs on-device models
+
+See [docs/NIRVA_AUDIO_ARCHITECTURE.md](docs/NIRVA_AUDIO_ARCHITECTURE.md) for complete architecture.
+
+---
+
+## 📊 Model Inventory
+
+### On-Device Models (iOS/macOS)
+
+| Model | Size | Task | Location |
+|-------|------|------|----------|
+| **CAM++** | 14 MB | Speaker Verification | `vendor/3D-Speaker/campplus_cn_en_common.mlpackage` |
+| **Parakeet TDT v3** | ~1 GB | ASR (25 languages) | FluidAudio auto-download |
+| **WeSpeaker v2** | ~50 MB | Speaker Embeddings | FluidAudio auto-download |
+| **Silero VAD** | ~5 MB | Voice Activity Detection | FluidAudio auto-download |
